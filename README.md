@@ -19,6 +19,25 @@ our public showroom copy at `demo.zerotrustintelligence.io`.
   exists for that content, so `zti-verify` is **red**:
   `DONE_WITHOUT_RECEIPT`. The merge button is dead. That is the point.
 
+## See it for yourself — 2 minutes, nothing to install
+
+1. Open [PR #2 — "Quick fix, skipping the receipt"](https://github.com/bitscon/zti-verified-done-demo/pull/2).
+   It was committed with `git commit --no-verify`, skipping the local gate.
+2. Look at its checks: **zti-verify is red.** Open the check's details — the
+   runner asked the plane and got `DONE_WITHOUT_RECEIPT`, exit 2.
+3. Look at the merge box: **blocked.** No receipt for that exact content, no
+   merge — no matter who (or what) wrote it.
+4. Now open [PR #1](https://github.com/bitscon/zti-verified-done-demo/pull/1):
+   same required check, **green**, merged — that content was receipted first
+   (`zti receipt` re-ran the tests independently before minting).
+5. The plane answering those checks is live:
+   `curl https://demo.zerotrustintelligence.io/v1/health`
+6. PRs from forks fail the check too — outsiders can't mint receipts for this
+   repo. That is the point.
+
+Want this on your own repos? It's self-hosted — see
+[zerotrustintelligence.io](https://zerotrustintelligence.io).
+
 ## How it works
 
 One contract — pytest must pass; `.github/` and `.zti/` are out of bounds —
