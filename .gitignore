@@ -1,0 +1,4 @@
+# The gate bearer key is a credential — config is committed, the key never is.
+.zti/gate.key
+__pycache__/
+*.pyc

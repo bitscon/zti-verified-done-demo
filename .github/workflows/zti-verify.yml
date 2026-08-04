@@ -1,0 +1,35 @@
+# ZTI Tier-3 required check (ADR-0004) — the merge-time receipt-gate.
+# From the ZTI Core template (zticli/templates/zti-verify.yml); one demo
+# deviation: the plane URL is a repo VARIABLE, not a secret — this demo
+# plane's address is public on purpose. The gate credentials stay secrets.
+#
+# Fail-closed by design: no receipt, a non-passing receipt, an unreachable
+# plane, and a license-locked plane all exit nonzero and fail this check.
+
+name: zti-verify
+on:
+  pull_request:
+
+jobs:
+  zti-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Verify the PR HEAD — the exact tree the developer's machine minted
+          # a receipt for — never the ephemeral merge commit.
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the zti CLI (vendored wheel)
+        run: pip install .zti/zti-*.whl
+
+      - name: Verify a passing receipt exists for exactly this content
+        env:
+          ZTI_PLANE_URL: ${{ vars.ZTI_PLANE_URL }}
+          ZTI_GATE_ID: ${{ secrets.ZTI_GATE_ID }}
+          ZTI_GATE_KEY: ${{ secrets.ZTI_GATE_KEY }}
+        run: zti verify ${{ github.event.pull_request.head.sha }}
