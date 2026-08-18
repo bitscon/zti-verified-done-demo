@@ -35,6 +35,20 @@ our public showroom copy at `demo.zerotrustintelligence.io`.
 6. PRs from forks fail the check too — outsiders can't mint receipts for this
    repo. That is the point.
 
+### No login, no JavaScript, still visible
+
+GitHub renders the merge box for signed-in users, so here is the block as a
+static image, straight from the Checks tab of
+[PR #2](https://github.com/bitscon/zti-verified-done-demo/pull/2), viewed
+logged out (captured 2026-08-18):
+
+![PR #2 Checks tab, logged out: the zti-verify required check is red on commit 8558c7a](docs/assets/pr2-zti-verify-red-logged-out.png)
+
+The failing run itself is public too:
+[the zti-verify check run for 8558c7a](https://github.com/bitscon/zti-verified-done-demo/actions/runs/30872603547/job/91877492065)
+shows every step green until "Verify a passing receipt exists for exactly
+this content," which exits 2: `DONE_WITHOUT_RECEIPT`.
+
 Want this on your own repos? It's self-hosted — see
 [zerotrustintelligence.io](https://zerotrustintelligence.io).
 
@@ -67,7 +81,13 @@ Claude Code, Cursor, Copilot, Codex, or a human in a hurry — same gate.
 - `.zti/` — the vendored CLI wheel and plane config. (The gate bearer key is
   **not** in this repo; it lives in Actions secrets.)
 
-The sample code is free to copy. The vendored `zti` CLI wheel is part of the
-commercial ZTI Core product — see
-[zerotrustintelligence.io](https://zerotrustintelligence.io) for licensing
-(free 30-day trial; runs entirely on your own infrastructure).
+The sample code is free to copy. The `zti` client is the open client layer
+of ZTI, MIT licensed at [bitscon/zti-cli](https://github.com/bitscon/zti-cli);
+the wheel vendored in `.zti/` is the pinned build this repo's check installs.
+The plane it reports to is ZTI Core, which is complete and in early access:
+every install includes a free 30-day trial with full functionality,
+individual use is free, and organizations license it per year with pricing
+announced at launch. Contact
+[licensing@zerotrustintelligence.io](mailto:licensing@zerotrustintelligence.io)
+or see [zerotrustintelligence.io](https://zerotrustintelligence.io); it runs
+entirely on your own infrastructure.
