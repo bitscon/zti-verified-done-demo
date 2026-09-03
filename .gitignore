@@ -2,3 +2,7 @@
 .zti/gate.key
 __pycache__/
 *.pyc
+
+# Verifier wheels are installed from PyPI (pinned+hashed) by the zti-verify
+# gate, never vendored in this tree — a planted wheel must not be installable.
+.zti/*.whl
