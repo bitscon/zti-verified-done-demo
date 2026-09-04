@@ -76,14 +76,18 @@ Claude Code, Cursor, Copilot, Codex, or a human in a hurry — same gate.
 
 - `app.py` / `test_app.py` — the tiny real codebase under governance.
 - `.github/workflows/zti-verify.yml` — the Tier-3 required check: installs
-  the `zti` CLI from the vendored wheel and asks the plane whether a passing
-  receipt covers the PR head's exact content.
-- `.zti/` — the vendored CLI wheel and plane config. (The gate bearer key is
-  **not** in this repo; it lives in Actions secrets.)
+  the `zti` CLI from PyPI, pinned to an exact version and artifact hash, then
+  asks the plane whether a passing receipt covers the PR head's exact content.
+  The verifier is installed from **outside** the tree it checks — a PR cannot
+  ship a stub `zti` wheel that passes itself.
+- `.zti/` — plane config only. (The gate bearer key is **not** in this repo;
+  it lives in Actions secrets. No CLI wheel is vendored here: the check pins
+  its verifier from PyPI, so a planted in-tree wheel is never an install source.)
 
 The sample code is free to copy. The `zti` client is the open client layer
-of ZTI, MIT licensed at [bitscon/zti-cli](https://github.com/bitscon/zti-cli);
-the wheel vendored in `.zti/` is the pinned build this repo's check installs.
+of ZTI, MIT licensed at [bitscon/zti-cli](https://github.com/bitscon/zti-cli)
+and published on PyPI as `zti-cli`; the check installs it pinned by version
+and artifact hash, from outside the tree under test.
 The plane it reports to is ZTI Core, which is complete and in early access:
 every install includes a free 30-day trial with full functionality,
 individual use is free, and organizations license it per year with pricing

@@ -3,8 +3,18 @@
 # deviation: the plane URL is a repo VARIABLE, not a secret — this demo
 # plane's address is public on purpose. The gate credentials stay secrets.
 #
+# The verifier is installed from PyPI, pinned to an exact version AND artifact
+# hash, and NEVER from a file inside the pull-request tree it checks. A PR that
+# vendors a stub "zti" wheel cannot subvert this gate: the wheel is never the
+# install source, and no in-tree file can satisfy the pinned hash.
+#   Residual: a PR that also edits THIS workflow file could repoint the
+#   install. Close that GitHub-side by marking zti-verify a required workflow
+#   / branch-protection ruleset (owner config; not settable from the repo).
+#   See docs/changes/CHANGE-2026-09-03-001-verifier-out-of-tree.md.
+#
 # Fail-closed by design: no receipt, a non-passing receipt, an unreachable
-# plane, and a license-locked plane all exit nonzero and fail this check.
+# plane, an unreachable package index, and a license-locked plane all exit
+# nonzero and fail this check.
 
 name: zti-verify
 on:
@@ -24,8 +34,16 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install the zti CLI (vendored wheel)
-        run: pip install .zti/zti-*.whl
+      - name: Install the zti verifier — pinned, from PyPI, OUTSIDE the tree under test
+        run: |
+          # Pinned by version AND artifact hash; installed from PyPI, never
+          # from the PR tree. Regenerate on a version bump:
+          #   pip download --no-deps zti-cli==<v> ztip==<v> && sha256sum *.whl
+          printf '%s\n' \
+            'zti-cli==0.1.0 --hash=sha256:3316ba91340476841bd6f6bd20e57f597c1292fe03fe0c6a8b603604f71f3a17' \
+            'ztip==1.0.0.dev2 --hash=sha256:4767a57369ff66289056336f51959a9e9997d0db3b646326d3491bcf8ecb1ac9' \
+            > "$RUNNER_TEMP/zti-verifier.lock"
+          pip install --require-hashes --no-deps -r "$RUNNER_TEMP/zti-verifier.lock"
 
       - name: Verify a passing receipt exists for exactly this content
         env:
