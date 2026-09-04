@@ -1,0 +1,7 @@
+# The gate config is owner-territory: any PR touching the zti-verify
+# workflow (or this file) requires the repository owner's review.
+# Enforced by the main-branch ruleset ("require review from Code Owners").
+# This file lives at the repo root ON PURPOSE — the published contract
+# forbids writes under .github/, and GitHub reads root CODEOWNERS fine.
+/.github/ @bitscon
+/CODEOWNERS @bitscon
